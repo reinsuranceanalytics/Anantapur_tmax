@@ -77,19 +77,11 @@ if 'time' in df.columns:
         # Dropdown for years
         year = st.slider('Years:',1979, 2024, 2024,1)
     
-       # Filter DataFrame based on selected year
-        df_filtered = df[df['year'] == year]
-        
-        # Get the maximum tmax for the selected year
-        max_tmax_for_year = float(df_filtered['tmax'].max()) if not df_filtered.empty else float(df['tmax'].max())
-        
-        # Slider for tmax threshold, with max_value set to the max tmax for the selected year
-        tmax_threshold = st.slider(
-            'Tmax Threshold:', 
-            min_value=float(df['tmax'].min()), 
-            max_value=max_tmax_for_year, 
-            step=1.0
-        )
+       # Slider for tmax threshold
+        tmax_threshold = st.slider('Tmax Threshold:', min_value=float(df['tmax'].min()), max_value=float(df['tmax'].max()), step=1.0)
+    
+        # Filter data based on selected year and tmax threshold
+        filtered_df = filter_data(df, year, tmax_threshold)
     
         # Count the number of days meeting the tmax threshold for each lat/lon
         days_count_df = count_days_per_location(filtered_df, tmax_threshold)
