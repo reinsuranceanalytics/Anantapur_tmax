@@ -70,11 +70,11 @@ def create_map(df, shapefile, tmax_threshold):
     return m
 
 # Read the CSV file
-file_path = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur_test.csv"      # Replace with your CSV file path
+file_path = "https://raw.githubusercontent.com/reinsuranceanalytics/Anantapur_tmax/refs/heads/main/Anantapur_test.csv"      # Replace with your CSV file path
 df = read_csv(file_path)
 st.dataframe(df.to_dict(orient="records"),use_container_width=True, height=700)
 # File uploader for shapefile
-shapefile = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur.json"
+shapefile = "https://raw.githubusercontent.com/reinsuranceanalytics/Anantapur_tmax/refs/heads/main/Anantapur.json"
 
 # Get unique years from the DataFrame
 if 'time' in df.columns:
