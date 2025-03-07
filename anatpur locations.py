@@ -22,7 +22,7 @@ def read_csv(url):
         df['time'] = pd.to_datetime(df['time'])
     else:
         st.error("Column 'time' not found in the CSV file.")
-    return
+    return df
 
 # Function to filter the DataFrame based on year and tmax threshold
 def filter_data(df, year, tmax_threshold):
@@ -70,27 +70,28 @@ df = read_csv(file_path)
 shapefile = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur.json"
 
 # Get unique years from the DataFrame
-years = df['time'].dt.year.unique()
+if 'time' in df.columns:
+    years = df['time'].dt.year.unique()
 
-if shapefile is not None:
-    # Dropdown for years
-    year = st.slider('Years:',1979, 2024, 2024,1)
-
-    # Slider for tmax threshold
-    tmax_threshold = st.slider('Tmax Threshold:', min_value=float(df['tmax'].min()), max_value=float(df['tmax'].max()), step=1.0)
-
-    # Filter data based on selected year and tmax threshold
-    filtered_df = filter_data(df, year, tmax_threshold)
-
-    # Count the number of days meeting the tmax threshold for each lat/lon
-    days_count_df = count_days_per_location(filtered_df, tmax_threshold)
-
-    # Merge the count data with the filtered data
-    filtered_df = filtered_df.merge(days_count_df, on=['lat', 'lon'], how='left')
-
-     # Create map with filtered data and shapefile
-    m = create_map(filtered_df, shapefile, tmax_threshold)
-
-    # Display map
-    folium_static(m)
+    if shapefile is not None:
+        # Dropdown for years
+        year = st.slider('Years:',1979, 2024, 2024,1)
+    
+        # Slider for tmax threshold
+        tmax_threshold = st.slider('Tmax Threshold:', min_value=float(df['tmax'].min()), max_value=float(df['tmax'].max()), step=1.0)
+    
+        # Filter data based on selected year and tmax threshold
+        filtered_df = filter_data(df, year, tmax_threshold)
+    
+        # Count the number of days meeting the tmax threshold for each lat/lon
+        days_count_df = count_days_per_location(filtered_df, tmax_threshold)
+    
+        # Merge the count data with the filtered data
+        filtered_df = filtered_df.merge(days_count_df, on=['lat', 'lon'], how='left')
+    
+         # Create map with filtered data and shapefile
+        m = create_map(filtered_df, shapefile, tmax_threshold)
+    
+        # Display map
+        folium_static(m)
 
