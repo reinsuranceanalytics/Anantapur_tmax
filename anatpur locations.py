@@ -72,7 +72,7 @@ def create_map(df, shapefile, tmax_threshold):
 # Read the CSV file
 file_path = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur_test.csv"      # Replace with your CSV file path
 df = read_csv(file_path)
-
+st.dataframe(df.to_dict(orient="records"),use_container_width=True, height=700)
 # File uploader for shapefile
 shapefile = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur.json"
 
