@@ -74,16 +74,17 @@ if 'time' in df.columns:
     years = df['time'].dt.year.unique()
 
     if shapefile is not None:
+        col1,col2 = st.columns([4,1])
         # Dropdown for years
-        year = st.slider('Years:',1979, 2024, 2024,1)
+        year = col1.slider('Years:',1979, 2024, 2024,1)
     
        # Filter DataFrame based on selected year to calculate max tmax for that year
         df_filtered_by_year = df[df['time'].dt.year == year]
         max_tmax_for_year = float(df_filtered_by_year['tmax'].max()) if not df_filtered_by_year.empty else float(df['tmax'].max())
 
         # Slider for tmax threshold, with max_value set to the max tmax for the selected year
-        tmax_threshold = st.slider(
-            'Tmax Threshold:', 
+        tmax_threshold = col2.slider(
+            'Threshold tmax:', 
             min_value=float(df['tmax'].min()), 
             max_value=max_tmax_for_year, 
             step=1.0
