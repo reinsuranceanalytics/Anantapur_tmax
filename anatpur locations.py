@@ -86,7 +86,7 @@ if 'time' in df.columns:
         tmax_threshold = col2.number_input(
             'Threshold tmax:', 
             min_value=float(df['tmax'].min()), 
-            max_value=max_tmax_for_year, value = 38.0
+            max_value=max_tmax_for_year, value = 38.0,
             step=1.0
         )
     
