@@ -74,9 +74,10 @@ if 'time' in df.columns:
     years = df['time'].dt.year.unique()
 
     if shapefile is not None:
+        st.markdown("### Temperature Events for Selected Year & Threshold tmax")
         col1,col2 = st.columns([4,1])
         # Dropdown for years
-        year = col1.slider('Years:',1979, 2024, 2010, 1)
+        year = col1.slider('Select Years:',1979, 2024, 2010, 1)
     
        # Filter DataFrame based on selected year to calculate max tmax for that year
         df_filtered_by_year = df[df['time'].dt.year == year]
