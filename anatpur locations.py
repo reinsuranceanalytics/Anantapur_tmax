@@ -10,7 +10,13 @@ import requests
 def read_csv(url):
     response = requests.get(url)
     response.raise_for_status()  # Ensure we notice bad responses
-    df = pd.read_csv(url)
+    try:
+        df = pd.read_csv(url)
+    except pd.errors.ParserError as e:
+        st.error(f"ParserError: {e}")
+        # Attempt to read the file by skipping bad lines
+        df = pd.read_csv(url, error_bad_lines=False)
+    
     # Print the first few rows of the DataFrame for debugging
     st.write("First few rows of the DataFrame:")
     st.write(df.head())
