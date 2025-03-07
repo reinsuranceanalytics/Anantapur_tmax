@@ -76,7 +76,7 @@ if 'time' in df.columns:
     if shapefile is not None:
         col1,col2 = st.columns([4,1])
         # Dropdown for years
-        year = col1.slider('Years:',1979, 2024, 2024,1)
+        year = col1.slider('Years:',1979, 2024, 2025, 1)
     
        # Filter DataFrame based on selected year to calculate max tmax for that year
         df_filtered_by_year = df[df['time'].dt.year == year]
