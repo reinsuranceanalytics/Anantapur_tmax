@@ -10,8 +10,19 @@ import requests
 def read_csv(url):
     response = requests.get(url)
     response.raise_for_status()  # Ensure we notice bad responses
-    df = pd.read_csv(url, parse_dates=['time'])
-    return df
+    df = pd.read_csv(url)
+    # Print the first few rows of the DataFrame for debugging
+    st.write("First few rows of the DataFrame:")
+    st.write(df.head())
+    # Print the column names for debugging
+    st.write("Column names in the DataFrame:")
+    st.write(df.columns)
+    # Parse 'time' column as datetime if it exists
+    if 'time' in df.columns:
+        df['time'] = pd.to_datetime(df['time'])
+    else:
+        st.error("Column 'time' not found in the CSV file.")
+    return
 
 # Function to filter the DataFrame based on year and tmax threshold
 def filter_data(df, year, tmax_threshold):
