@@ -6,20 +6,6 @@ import folium
 from streamlit_folium import folium_static
 import requests
 
-# Inject custom CSS to hide the profile icon
-hide_profile_icon = """
-    <style>
-    /* Target the profile icon using its class */
-    ._profileImage_gzau3_78 {
-        display: none !important;
-    }
-    /* Alternatively, target using data-testid */
-    [data-testid="appCreatorAvatar"] {
-        display: none !important;
-    }
-    </style>
-"""
-st.markdown(hide_profile_icon, unsafe_allow_html=True)
 
 # Function to read the CSV file and return a DataFrame
 # Function to read the CSV file and return a DataFrame
