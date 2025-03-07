@@ -83,10 +83,10 @@ if 'time' in df.columns:
         max_tmax_for_year = float(df_filtered_by_year['tmax'].max()) if not df_filtered_by_year.empty else float(df['tmax'].max())
 
         # Slider for tmax threshold, with max_value set to the max tmax for the selected year
-        tmax_threshold = col2.slider(
+        tmax_threshold = col2.number_input(
             'Threshold tmax:', 
             min_value=float(df['tmax'].min()), 
-            max_value=max_tmax_for_year, 
+            max_value=max_tmax_for_year, value = 38.0
             step=1.0
         )
     
