@@ -4,10 +4,13 @@ import streamlit as st
 import geopandas as gpd
 import folium
 from streamlit_folium import folium_static
+import requests
 
 # Function to read the CSV file and return a DataFrame
-def read_csv(file_path):
-    df = pd.read_csv(file_path, parse_dates=['time'])
+def read_csv(url):
+    response = requests.get(url)
+    response.raise_for_status()  # Ensure we notice bad responses
+    df = pd.read_csv(url, parse_dates=['time'])
     return df
 
 # Function to filter the DataFrame based on year and tmax threshold
@@ -49,11 +52,11 @@ def create_map(df, shapefile, tmax_threshold):
     return m
 
 # Read the CSV file
-file_path = r'C:\VS code scripts\Temp\Anantapur_test.csv'  # Replace with your CSV file path
+file_path = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur_test.csv"      # Replace with your CSV file path
 df = read_csv(file_path)
 
 # File uploader for shapefile
-shapefile = r'C:\VS code scripts\Temp\Anantapur.json'
+shapefile = "https://github.com/reinsuranceanalytics/Anantapur_tmax/blob/main/Anantapur.json"
 
 # Get unique years from the DataFrame
 years = df['time'].dt.year.unique()
