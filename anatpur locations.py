@@ -17,14 +17,7 @@ def read_csv(url):
         st.error(f"ParserError: {e}")
         # Attempt to read the file by skipping bad lines
         df = pd.read_csv(url, on_bad_lines='skip')
-    
-    # Print the first few rows of the DataFrame for debugging
-    st.write("First few rows of the DataFrame:")
-    st.write(df.head())
-    # Print the column names for debugging
-    st.write("Column names in the DataFrame:")
-    st.write(df.columns)
-    # Parse 'time' column as datetime if it exists
+
     if 'time' in df.columns:
         df['time'] = pd.to_datetime(df['time'])
     else:
@@ -72,7 +65,7 @@ def create_map(df, shapefile, tmax_threshold):
 # Read the CSV file
 file_path = "https://raw.githubusercontent.com/reinsuranceanalytics/Anantapur_tmax/refs/heads/main/Anantapur_test.csv"      # Replace with your CSV file path
 df = read_csv(file_path)
-st.dataframe(df.to_dict(orient="records"),use_container_width=True, height=700)
+
 # File uploader for shapefile
 shapefile = "https://raw.githubusercontent.com/reinsuranceanalytics/Anantapur_tmax/refs/heads/main/Anantapur.json"
 
