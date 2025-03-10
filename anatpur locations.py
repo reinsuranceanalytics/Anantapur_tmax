@@ -86,13 +86,13 @@ shapefile = "https://raw.githubusercontent.com/reinsuranceanalytics/Anantapur_tm
 
 # Get unique years from the DataFrame
 if 'time' in df.columns:
-    years = df['time'].dt.year.unique()
+    years = sorted(df['time'].dt.year.unique(), reverse=True)
 
     if shapefile is not None:
         st.markdown("### Temperature Events for Selected Year & Threshold tmax")
-        col1,col2 = st.columns([4,1])
+        col1,col2 = st.columns([2,1])
         # Dropdown for years
-        year = col1.slider('Select Years:',1979, 2024, 2010, 1)
+        year = col1.selectbox('Select Year:',years)
     
        # Filter DataFrame based on selected year to calculate max tmax for that year
         df_filtered_by_year = df[df['time'].dt.year == year]
