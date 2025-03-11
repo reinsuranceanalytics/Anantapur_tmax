@@ -61,7 +61,7 @@ def create_map(df, shapefile, tmax_threshold):
     filtered_gdf = gdf[gdf['DISTRICT'].isin(['Anantapur', 'Sri Satya Sai'])]
     
     # Create a Folium map centered around the mean latitude and longitude
-    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=7, width='80%', height='400px', left='10%')
+    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=7, width='100%', height='400px')
     
     # Add custom CSS to the map
     m.get_root().html.add_child(folium.Element('''
