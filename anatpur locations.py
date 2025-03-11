@@ -61,7 +61,15 @@ def create_map(df, shapefile, tmax_threshold):
     filtered_gdf = gdf[gdf['DISTRICT'].isin(['Anantapur', 'Sri Satya Sai'])]
     
     # Create a Folium map centered around the mean latitude and longitude
-    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=8)
+    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=7, width='80%', height='400px', left='10%')
+    
+    # Add custom CSS to the map
+    m.get_root().html.add_child(folium.Element('''
+        <style>
+            #map { height: 400px !important; margin: 0 !important; padding: 0 !important; }
+            .folium-map { height: 400px !important; margin: 0 !important; padding: 0 !important; }
+        </style>
+    '''))
     
     # Add district boundaries to the map
     folium.GeoJson(filtered_gdf).add_to(m)
@@ -72,7 +80,7 @@ def create_map(df, shapefile, tmax_threshold):
             location=[row['lat'], row['lon']],
             popup=f"Lat: {row['lat']}, Lon: {row['lon']}, Tmax: {row['tmax']}",
             tooltip=f"Lat: {row['lat']:.2f}<br>Lon: {row['lon']:.2f}<br>Days: {row['days_count']}",
-            icon=folium.Icon(color='red', icon='info-sign')
+            icon=folium.Icon(color='red', icon='thermometer-full', prefix='fa')
         ).add_to(m)
     
     return m
@@ -118,7 +126,33 @@ if 'time' in df.columns:
     
          # Create map with filtered data and shapefile
         m = create_map(filtered_df, shapefile, tmax_threshold)
-    
+        
         # Display map
-        folium_static(m)
+        with st.container():
+            folium_static(m, height=400)  # Explicitly set width and height
+
+        # Convert date column to datetime if needed
+    df['time'] = pd.to_datetime(df['time'])
+
+    # Add a year column to the DataFrame
+    df['year'] = df['time'].dt.year
+
+    # Filter data where temperature exceeds the threshold
+    filtered_data = df[df['tmax'] >= tmax_threshold]
+
+    # Group by latitude, longitude, and year, then count the number of days
+    grouped_data = filtered_data.groupby(['lat', 'lon', 'year']).size().reset_index(name='count_of_days')
+
+    # Pivot the table to have lat, lon as rows and count_of_days for each year as columns
+    pivot_table = grouped_data.pivot_table(index=['lat', 'lon'], columns='year', values='count_of_days', fill_value=0)
+
+    pivot_table = pivot_table.sort_index(axis=1, ascending=False)
+
+    # Reset index to get a clean table format
+    pivot_table.reset_index(inplace=True)
+
+    # Display dataframe
+    with st.container():
+        st.markdown('<style>.stDataFrame {margin-top: 0 !important; padding-top: 0 !important;}</style>', unsafe_allow_html=True)
+        st.dataframe(pivot_table.to_dict(orient='records'), use_container_width=True)
 
