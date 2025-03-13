@@ -97,7 +97,7 @@ if 'time' in df.columns:
     years = sorted(df['time'].dt.year.unique(), reverse=True)
 
     if shapefile is not None:
-        st.markdown("### Temperature Events for Selected Year & Threshold tmax")
+        st.markdown("### Temax Events for Period 15-Mar to 15-May for Selected Year & Threshold")
         col1,col2 = st.columns([2,1])
         # Dropdown for years
         year = col1.selectbox('Select Year:',years)
@@ -131,28 +131,51 @@ if 'time' in df.columns:
         with st.container():
             folium_static(m, height=400)  # Explicitly set width and height
 
-        # Convert date column to datetime if needed
-    df['time'] = pd.to_datetime(df['time'])
+# Convert date column to datetime if needed
+df['time'] = pd.to_datetime(df['time'])
 
-    # Add a year column to the DataFrame
-    df['year'] = df['time'].dt.year
+# Manually add village names
+village_names = {
+    (14.0, 78.0): 'Obuladevara Cheruvu',
+    (14.7, 77.5): 'Simgampalli',
+    (14.8, 77.4): 'Muddalapuram'
+}
+df['village'] = df.apply(lambda row: village_names.get((row['lat'], row['lon']), 'Unknown'), axis=1)
 
-    # Filter data where temperature exceeds the threshold
-    filtered_data = df[df['tmax'] >= tmax_threshold]
+# Add a year column to the DataFrame
+df['year'] = df['time'].dt.year
 
-    # Group by latitude, longitude, and year, then count the number of days
-    grouped_data = filtered_data.groupby(['lat', 'lon', 'year']).size().reset_index(name='count_of_days')
+# Add a period column to differentiate between the two periods
+df['period'] = df['time'].apply(lambda x: '15 Mar-15 Apr' if (x.month == 3 and x.day >= 15) or (x.month == 4 and x.day <= 15) else
+                                ('16 Apr-15 May' if (x.month == 4 and x.day > 15) or (x.month == 5 and x.day <= 15) else None))
 
-    # Pivot the table to have lat, lon as rows and count_of_days for each year as columns
-    pivot_table = grouped_data.pivot_table(index=['lat', 'lon'], columns='year', values='count_of_days', fill_value=0)
+# Filter out rows where period is None
+df = df[df['period'].notna()]
 
-    pivot_table = pivot_table.sort_index(axis=1, ascending=False)
+# Filter data where temperature exceeds the threshold
+filtered_data = df[df['tmax'] >= tmax_threshold]
 
-    # Reset index to get a clean table format
-    pivot_table.reset_index(inplace=True)
+# Group by latitude, longitude, village, year, and period, then count the number of days
+grouped_data = filtered_data.groupby(['lat', 'lon', 'village', 'year', 'period']).size().reset_index(name='count_of_days')
 
-    # Display dataframe
-    with st.container():
-        st.markdown('<style>.stDataFrame {margin-top: 0 !important; padding-top: 0 !important;}</style>', unsafe_allow_html=True)
-        st.dataframe(pivot_table.to_dict(orient='records'), use_container_width=True)
+# Pivot the table to have lat, lon, village as rows and count_of_days for each year and period as columns
+pivot_table = grouped_data.pivot_table(index=['lat', 'lon', 'village'], columns=['year', 'period'], values='count_of_days', fill_value=0)
 
+pivot_table = pivot_table.sort_index(axis=1, ascending=False)
+
+# Create MultiIndex for columns to show year and period in separate rows
+pivot_table = pivot_table.reindex(columns=pd.MultiIndex.from_product([sorted(pivot_table.columns.levels[0]), ['15 Mar-15 Apr', '16 Apr-15 May']], names=['Year', 'Period']))
+
+# Ensure the columns are sorted in the desired order: years in decreasing order, ranges in the specified order
+pivot_table = pivot_table.reindex(columns=pd.MultiIndex.from_product([sorted(pivot_table.columns.levels[0], reverse=True), ['15 Mar-15 Apr', '16 Apr-15 May']], names=['Year', 'Period']))
+
+# Reset index to get a clean table format
+pivot_table.reset_index(inplace=True)
+
+# Add back the headers for lat, lon, and village
+pivot_table.columns = pd.MultiIndex.from_tuples([('','Lat'), ('','Lon'), ('','Village')] + [(str(year), period) for year, period in pivot_table.columns[3:]], names=['Year', 'Period'])
+
+# Display dataframe with MultiIndex columns
+with st.container():
+    st.markdown('<style>.stDataFrame {margin-top: 0 !important; padding-top: 0 !important;}</style>', unsafe_allow_html=True)
+    st.dataframe(pivot_table, use_container_width=True)
