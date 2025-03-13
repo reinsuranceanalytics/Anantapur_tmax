@@ -97,7 +97,7 @@ if 'time' in df.columns:
     years = sorted(df['time'].dt.year.unique(), reverse=True)
 
     if shapefile is not None:
-        st.markdown("### Temax Events for Period 15-Mar to 15-May for Selected Year & Threshold")
+        st.markdown("### Events from 15-Mar to 15-May for Selected Year & Threshold tmax")
         col1,col2 = st.columns([2,1])
         # Dropdown for years
         year = col1.selectbox('Select Year:',years)
