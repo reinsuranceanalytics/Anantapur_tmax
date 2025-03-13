@@ -137,7 +137,7 @@ df['time'] = pd.to_datetime(df['time'])
 # Manually add village names
 village_names = {
     (14.0, 78.0): 'Obuladevara Cheruvu',
-    (14.7, 77.5): 'Simgampalli',
+    (14.7, 77.4): 'Simgampalli',
     (14.8, 77.4): 'Muddalapuram'
 }
 df['village'] = df.apply(lambda row: village_names.get((row['lat'], row['lon']), 'Unknown'), axis=1)
